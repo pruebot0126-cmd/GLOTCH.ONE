@@ -6,24 +6,72 @@
     <title>GLOTCH Medidor</title>
 
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="/GLOTCH.ONE/libs/leaflet.css">
-    <link rel="stylesheet" href="/GLOTCH.ONE/libs/leaflet.draw.css">
+    <link rel="stylesheet" href="../libs/leaflet.css">
+    <link rel="stylesheet" href="../libs/leaflet.draw.css">
 
-    <!-- Custom CSS -->
+    <!-- Estilos propios -->
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Caja de datos */
+        #panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px #0003;
+            font-family: Arial;
+            z-index: 9999;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 6px;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="map"></div>
 
-    <!-- Leaflet JS -->
-    <script src="/GLOTCH.ONE/libs/leaflet.js"></script>
-    <script src="/GLOTCH.ONE/libs/leaflet.draw.js"></script>
+<div id="map"></div>
 
-    <!-- Archivo de idioma -->
-    <script src="/GLOTCH.ONE/libs/es.json"></script>
+<div id="panel">
+    <div><strong>Área (m²):</strong> <span id="area">0</span></div>
+    <div><strong>Hectáreas:</strong> <span id="hectareas">0</span></div>
 
-    <!-- App -->
-    <script src="app.js"></script>
+    <button onclick="toggleSatellite()">Vista Satelital</button>
+    <button onclick="saveShape()">Guardar Figura</button>
+    <button onclick="loadShapes()">Cargar Figuras</button>
+</div>
+
+<!-- Leaflet -->
+<script src="../libs/leaflet.js"></script>
+
+<!-- Leaflet Draw -->
+<script src="../libs/leaflet.draw.js"></script>
+
+<!-- Hacer figuras movibles -->
+<script src="../libs/Leaflet.Path.Drag.js"></script>
+
+<!-- Turf.js para cálculo de área -->
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+<!-- Código de la app -->
+<script src="app.js"></script>
+
 </body>
 </html>
