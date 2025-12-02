@@ -1,40 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Glotch - Medidor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOTCH Medidor</title>
 
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="../libs/leaflet.css">
+    <link rel="stylesheet" href="../libs/leaflet.draw.css">
 
-  <!-- Leaflet Draw -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-
-  <!-- Plugin para arrastrar polígonos -->
-  <script src="https://unpkg.com/leaflet-path-drag/dist/L.Path.Drag.js"></script>
-
-  <!-- Turf.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-
-  <link rel="stylesheet" href="style.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div id="map"></div>
 
-  <div id="map"></div>
+    <!-- Leaflet JS -->
+    <script src="../libs/leaflet.js"></script>
+    <script src="../libs/leaflet.draw.js"></script>
 
-  <div class="panel">
-    <h3>Área total: <span id="area">0</span> m²</h3>
-    <h3>Hectáreas: <span id="hectareas">0</span> ha</h3>
+    <!-- Archivo de idioma -->
+    <script src="../libs/es.json"></script>
 
-    <button onclick="saveShape()">Guardar</button>
-    <button onclick="loadShapes()">Cargar</button>
-    <button onclick="toggleSatellite()">Satélite</button>
-  </div>
-
-  <script src="app.js"></script>
+    <!-- Lógica del mapa -->
+    <script src="app.js"></script>
 </body>
 </html>
