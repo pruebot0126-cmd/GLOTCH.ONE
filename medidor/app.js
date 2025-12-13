@@ -1,29 +1,34 @@
-// MAPA BASE
-const map = L.map("map").setView([19.4326, -99.1332], 14);
+// =======================
+// INITIAL MAP SETUP
+// =======================
+const map = L.map("map").setView([19.4326, -99.1332], 13);
 
-const streetLayer = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-).addTo(map);
+// Base Map
+const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19
+}).addTo(map);
 
+// Satellite Layer
 const satelliteLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  { maxZoom: 19 }
 );
 
 let satelliteMode = false;
 
-// CAPA PARA FORMAS
+// =======================
+// DRAWING FEATURES
+// =======================
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
-// CONTROL PARA DIBUJAR
 const drawControl = new L.Control.Draw({
   draw: {
     polygon: true,
     polyline: true,
-    rectangle: true,
-    marker: false,
+    rectangle: false,
     circle: false,
-    circlemarker: false
+    marker: false
   },
   edit: {
     featureGroup: drawnItems
@@ -32,94 +37,96 @@ const drawControl = new L.Control.Draw({
 
 map.addControl(drawControl);
 
-// === ACTIVAR ARRASTRE (path.drag) ===
-function enableDrag(layer) {
-  if (layer.dragging) {
-    layer.dragging.enable();
-  } else if (layer.eachLayer) {
-    layer.eachLayer(l => {
-      if (l.dragging) l.dragging.enable();
-    });
-  }
-}
+let measureMode = false;
+let measurePoints = [];
 
-// === MEDIR DISTANCIA ===
-function measureDistance(layer) {
-  if (layer instanceof L.Polyline) {
-    const latlngs = layer.getLatLngs();
-    let meters = 0;
-
-    for (let i = 0; i < latlngs.length - 1; i++) {
-      meters += latlngs[i].distanceTo(latlngs[i + 1]);
-    }
-
-    alert("Distancia: " + meters.toFixed(2) + " metros");
-  }
-}
-
-// === ROTAR FIGURAS (multi-touch y mouse) ===
-function enableRotation(layer) {
-  let rotating = false;
-  let startAngle = 0;
-
-  layer.on("mousedown touchstart", e => {
-    rotating = true;
-    startAngle = map.mouseEventToContainerPoint(e.originalEvent);
-  });
-
-  map.on("mousemove touchmove", e => {
-    if (!rotating) return;
-
-    let current = map.mouseEventToContainerPoint(e.originalEvent);
-    let angle = current.x - startAngle.x;
-
-    layer.setRotationAngle(angle);
-  });
-
-  map.on("mouseup touchend", () => {
-    rotating = false;
-  });
-}
-
-// CUANDO SE CREA UNA NUEVA FIGURA
 map.on("draw:created", function (e) {
   const layer = e.layer;
   drawnItems.addLayer(layer);
 
-  enableDrag(layer);
-  enableRotation(layer);
+  // Enable dragging if supported
+  if (layer.dragging) layer.dragging.enable();
+
+  updateArea();
 });
 
-// GUARDAR FORMAS
-function saveShape() {
-  const data = drawnItems.toGeoJSON();
-  localStorage.setItem("shapes", JSON.stringify(data));
-  alert("Formas guardadas");
-}
+map.on("draw:edited", updateArea);
 
-// CARGAR FORMAS
-function loadShapes() {
-  const data = localStorage.getItem("shapes");
-  if (!data) return alert("No hay formas guardadas");
+// =======================
+// UPDATE AREA / DISTANCE
+// =======================
+function updateArea() {
+  let totalArea = 0;
 
-  drawnItems.clearLayers();
-  L.geoJSON(JSON.parse(data)).eachLayer(layer => {
-    drawnItems.addLayer(layer);
-    enableDrag(layer);
-    enableRotation(layer);
+  drawnItems.eachLayer(layer => {
+    if (layer.toGeoJSON().geometry.type === "Polygon") {
+      totalArea += turf.area(layer.toGeoJSON());
+    }
   });
 
-  alert("Formas cargadas y movibles");
+  document.getElementById("area")?.textContent = totalArea.toFixed(2);
 }
 
-// CAMBIAR A SATÉLITE
-function toggleSatellite() {
+// =======================
+// BUTTON HANDLERS
+// =======================
+
+// Toggle Satellite
+document.getElementById("toggleSatelliteBtn").onclick = () => {
   if (satelliteMode) {
     map.removeLayer(satelliteLayer);
-    streetLayer.addTo(map);
+    map.addLayer(streetLayer);
   } else {
     map.removeLayer(streetLayer);
-    satelliteLayer.addTo(map);
+    map.addLayer(satelliteLayer);
   }
   satelliteMode = !satelliteMode;
-}
+};
+
+// Measure Distance
+document.getElementById("measureDistanceBtn").onclick = () => {
+  measureMode = !measureMode;
+  measurePoints = [];
+  alert("Modo medir distancia: haz clic en el mapa para medir.");
+};
+
+map.on("click", function (e) {
+  if (!measureMode) return;
+
+  measurePoints.push([e.latlng.lng, e.latlng.lat]);
+
+  if (measurePoints.length > 1) {
+    const line = turf.lineString(measurePoints);
+    const dist = turf.length(line, { units: "kilometers" });
+    alert("Distancia: " + (dist * 1000).toFixed(1) + " m");
+  }
+});
+
+// Save Shapes
+document.getElementById("saveBtn").onclick = () => {
+  const shapes = [];
+
+  drawnItems.eachLayer(layer => {
+    shapes.push(layer.toGeoJSON());
+  });
+
+  localStorage.setItem("glotch_shapes", JSON.stringify(shapes));
+  alert("Formas guardadas.");
+};
+
+// Load Shapes
+document.getElementById("loadBtn").onclick = () => {
+  const data = localStorage.getItem("glotch_shapes");
+  if (!data) return alert("No hay formas guardadas.");
+
+  const shapes = JSON.parse(data);
+  drawnItems.clearLayers();
+
+  shapes.forEach(shape => {
+    const layer = L.geoJSON(shape).addTo(drawnItems);
+
+    // Enable dragging if supported
+    if (layer.dragging) layer.dragging.enable();
+  });
+  alert("Formas cargadas.");
+};
