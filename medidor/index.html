@@ -1,83 +1,43 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOTCH Medidor</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glotch Medidor</title>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="../libs/leaflet.css">
-    <link rel="stylesheet" href="../libs/leaflet.draw.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="../libs/leaflet.css" />
 
-    <!-- Estilos propios -->
-    <link rel="stylesheet" href="style.css">
+  <!-- Leaflet Draw CSS -->
+  <link rel="stylesheet" href="../libs/leaflet.draw.css" />
 
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-
-        /* Caja de datos */
-        #panel {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 12px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px #0003;
-            font-family: Arial;
-            z-index: 9999;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 6px;
-            padding: 6px;
-        }
-    </style>
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div id="map"></div>
+  <div class="controls">
+    <button id="toggleSatelliteBtn">Vista Satélite</button>
+    <button id="measureDistanceBtn">Medir Distancia</button>
+    <button id="saveBtn">Guardar</button>
+    <button id="loadBtn">Cargar</button>
+  </div>
 
-<div id="panel">
-    <div><strong>Área (m²):</strong> <span id="area">0</span></div>
-    <div><strong>Hectáreas:</strong> <span id="hectareas">0</span></div>
+  <div id="map"></div>
 
-    <button onclick="toggleSatellite()">Vista Satelital</button>
-    <button onclick="saveShape()">Guardar Figura</button>
-    <button onclick="loadShapes()">Cargar Figuras</button>
-</div>
+  <!-- Leaflet JS -->
+  <script src="../libs/leaflet.js"></script>
 
-<!-- Leaflet -->
-<script src="../libs/leaflet.js"></script>
+  <!-- Leaflet Draw -->
+  <script src="../libs/leaflet.draw.js"></script>
 
-<!-- Leaflet Draw -->
-<script src="../libs/leaflet.draw.js"></script>
+  <!-- Turf for calculations -->
+  <script src="../libs/turf.min.js"></script>
 
-<!-- Hacer figuras movibles -->
-<script src="../libs/Leaflet.Path.Drag.js"></script>
+  <!-- Path Drag plugin -->
+  <script src="../libs/leaflet.path.drag.js"></script>
 
-<!-- Turf.js para cálculo de área -->
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-
-<!-- Código de la app -->
-<script src="app.js"></script>
-<!-- Librerías necesarias -->
-<script src="../libs/turf.min.js"></script>
-<script src="../libs/leaflet.geometryutil.js"></script>
-<script src="../libs/leaflet.path.drag.js"></script>
-<script src="../libs/leaflet.measure.js"></script>
-<link rel="stylesheet" href="../libs/leaflet.measure.css">
-
+  <!-- Your app logic -->
+  <script src="app.js"></script>
 </body>
 </html>
